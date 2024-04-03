@@ -1,2 +1,6 @@
-# youtube_downloader
-YouTube downloader for my mum:)
+# YouTube Downloader
+YouTube downloader for my mum & my gf:)
+
+
+# Installation guide
+

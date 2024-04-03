@@ -1,52 +1,84 @@
 from pytube import YouTube
+import inquirer
 import time
 import os
+import datetime
+try:
+    folder_name = "Downloads"
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
 
-mappa = "Downloads"
-isExist = os.path.exists(mappa)
-if not isExist:
-   os.makedirs(mappa)
+    open("links.txt", 'a+')
 
-open("linkek.txt", 'a+')
+    if(os.stat("links.txt").st_size == 0):
+        print("Please add links to links.txt file")
+        exit()
+    if(len(os.listdir("Downloads"))):
+        print("WARNING: Downloads folder is not empty. Files will be overwritten")
+        questions = [
+        inquirer.List(
+            "size",
+            message="Do you wish to continue?",
+            choices=["Yes", "No"],
+            ),
+        ]
+        answers = inquirer.prompt(questions)
+        if answers['size']=='No' or answers is None:
+            exit()
 
+    file_format = [
+    inquirer.List('format',
+                    message="Select the format",
+                    choices=['Video', 'Audio'],
+                ),
+    ]
+    format_answer = inquirer.prompt(file_format)
 
-dontes=""
-print("Ha videókat akarsz letölteni, nyomj 'V'-t, ha zenéket 'Z'-t, majd 'ENTER'-t")
-dontes=input(dontes)
-if(dontes==''):
-    exit()
+    if format_answer is None:
+        exit();
 
-path="Downloads"
-dir = os.listdir(path)
-if len(dir) == 0:
-    rendben=True
-else:
-    rendben=False
     
 
-if(not rendben):
-    print("Helyezd át a korábbi letöltéseket előbb máshova!")
-else:
-    print("linkek betöltése...")
-    for x in open("linkek.txt","r"):
+    print("reading links...")
+
+    for x in open("links.txt","r"):
         #link=input(x)
         yt=YouTube(x)
-        print("letöltés:",yt.title,"| hossz:",yt.length,"mp")
-        if(dontes=='v' or dontes=='V'):
+        print(yt.title,"| length:",yt.length,"seconds")
 
-            best = yt.streams.get_highest_resolution()
-            best.download("Downloads")
-            print("\t -> sikeresen letöltve")
-            time.sleep(2)
+        if(format_answer['format']=='Video'):
+            streams = yt.streams.filter(type="video")
+            questions = [
+            inquirer.List('stream',
+                            message="Select the stream you want to download",
+                            choices=[f"{s.itag}\t->({s.fps}FPS,{s.resolution},{s.mime_type.split('/')[1]})" for s in streams],
+                        ),
+            ]
+            answers = inquirer.prompt(questions)
+            if answers is None:
+                exit()
 
-        if (dontes=='z' or dontes=='Z'):
+            stream = streams.get_by_itag(int(answers['stream'].split('\t')[0]))
 
-            video = yt.streams.filter(only_audio=True).first()
-            out_file = video.download("Downloads")
-            base, ext = os.path.splitext(out_file)
-            new_file = base + '.mp3'
-            os.rename(out_file, new_file)
-            print("\t -> sikeresen letöltve")
-            time.sleep(2)
-    print("a kiválasztott videók / zenék le lettek töltve!")
-time.sleep(5)
+            stream.download("Downloads", filename_prefix=time.strftime("%Y_%m_%d_%H%M%S_"), filename=stream.default_filename.replace(" ", "_").replace("(", "").replace(")", ""))
+
+            print("\t -> successfully downloaded")
+
+        if (format_answer['format']=='Audio'):
+            streams = yt.streams.filter(type="audio")
+            questions = [
+            inquirer.List('stream',
+                            message="What size do you need?",
+                            choices=[f"{s.itag}\t->({s.abr},{s.mime_type.split('/')[1]})" for s in streams],
+                        ),
+            ]
+            answers = inquirer.prompt(questions)
+            if answers is None:
+                exit()
+
+            stream = streams.get_by_itag(int(answers['stream'].split('\t')[0]))
+
+            stream.download("Downloads", filename_prefix=time.strftime("%Y_%m_%d_%H%M%S_"), filename=stream.default_filename.replace(" ", "_").replace("(", "").replace(")", ""))
+            print("\t -> successfully downloaded")
+except Exception as e:
+    print("Download failed!")
