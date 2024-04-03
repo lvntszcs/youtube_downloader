@@ -2,7 +2,6 @@ from pytube import YouTube
 import inquirer
 import time
 import os
-import datetime
 try:
     folder_name = "Downloads"
     if not os.path.exists(folder_name):
@@ -12,6 +11,7 @@ try:
 
     if(os.stat("links.txt").st_size == 0):
         print("Please add links to links.txt file")
+        input("Press Enter to continue...")
         exit()
     if(len(os.listdir("Downloads"))):
         print("WARNING: Downloads folder is not empty. Files will be overwritten")
@@ -80,5 +80,6 @@ try:
 
             stream.download("Downloads", filename_prefix=time.strftime("%Y_%m_%d_%H%M%S_"), filename=stream.default_filename.replace(" ", "_").replace("(", "").replace(")", ""))
             print("\t -> successfully downloaded")
+            input("Press Enter to continue...")
 except Exception as e:
     print("Download failed!")
