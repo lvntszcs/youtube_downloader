@@ -12,7 +12,7 @@ YouTube downloader Zsófinak és Anyának;)
 `pyTube`, `inquirer`, `pyinstaller`
 
 ```bash
-$ pip install pyTube
-$ pip install inquirer
-$ pip install pyinstaller
+pip install pyTube
+pip install inquirer
+pip install pyinstaller
 ```
