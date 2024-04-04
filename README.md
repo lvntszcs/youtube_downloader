@@ -8,3 +8,11 @@ YouTube downloader Zsófinak és Anyának;)
 3. A `links.txt`-be írj be linkeket (soronként 1 linket)
 4. Kövesd az utasításokat, navigálj a nyilakkal és az ENTER lenyomásával
 
+# Használt python csomagok (Ha módosítani szeretnéd a kódot)
+`pyTube`, `inquirer`, `pyinstaller`
+
+```bash
+$ pip install pyTube
+$ pip install inquirer
+$ pip install pyinstaller
+```
